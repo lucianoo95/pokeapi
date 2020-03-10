@@ -31,8 +31,9 @@ router.post('/login', (req, res) => {
         username: result[0].username,
         mail: result[0].mail
       }
-    }, 'seed-desarrollo', { expiresIn: 60 * 60 * 24 });
+    }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
+    //Devolver token
     res.status(200).json({
       ok: true,
       username: result[0].username,

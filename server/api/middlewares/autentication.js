@@ -10,14 +10,15 @@ const verificaToken = (req, res, next) => {
 
   //Comprobar que el token es valido
   if (token) {
-    jwt.verify(token, 'seed-desarrollo', (error, decoded) => {
+    jwt.verify(token, process.env.SEED , (error, decoded) => {
+
       if (error) res.status(401).json({
         ok: false,
         message: 'Token no válido.'
       }); 
 
       req.user = decoded.user;
-      next();
+      next(); 
 
     });
   }

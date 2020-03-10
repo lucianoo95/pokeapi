@@ -2,11 +2,13 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 //Luego se crea una instancia de express ,
-//esta linea de codigo le dice al SO que le envie todo lo que entre en el puerto 3000.
+//esta linea de codigo le dice al S.O que le envie todo lo que entre en el puerto 3000.
 const app = express();
 
 //settings
 app.set('port', process.env.PORT || 3000);
+process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
+process.env.SEED = 'seed-desarrollo';
 
 //middleware
 app.use(morgan('dev'));
