@@ -5,20 +5,22 @@ const verificaToken = (req, res, next) => {
 
   let token = req.get('Authorization');
 
-  //Eliminar 'Bearer' del token
-  if (token.startsWith('Bearer ')) token = token.slice(7, token.length);
-
   //Comprobar que el token es valido
   if (token) {
-    jwt.verify(token, process.env.SEED , (error, decoded) => {
+    //Eliminar 'Bearer' del token
+    token = token.slice(7, token.length);
 
-      if (error) res.status(401).json({
-        ok: false,
-        message: 'Token no válido.'
-      }); 
+    jwt.verify(token, process.env.SEED, (error, decoded) => {//decoded es el payload , donde esta la info del usuario.
+
+      if (error) {
+        res.status(401).json({
+          ok: false,
+          message: 'Token no válido.'
+        });
+      }
 
       req.user = decoded.user;
-      next(); 
+      next();
 
     });
   }

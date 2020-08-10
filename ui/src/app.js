@@ -381,7 +381,8 @@ const loadTeamPage = async () => {
 
 const getTeam = () => {
   const config = configHeaders();
-  return axios.get(`${url_API}/team/getAll`, config).then(resp => resp.data);
+  return axios.get(`${url_API}/team/getAll`, config)
+    .then(resp => resp.data);
 }
 
 const showTeam = () => {
@@ -475,12 +476,51 @@ const loadCollectionPage = async () => {
   showCollection();
   checkPokemonCards(collection);
   enableCheckbox();
+
+  listEncounters();
+}
+
+//
+const listEncounters = () => {
+
+  const config = configHeaders();
+
+  axios.get(`${url_API}/encounters/list`, config)
+    .then(resp => showEncounters(resp.data))
+
+}
+
+const showEncounters = (data) => {
+  
+  const div_container = document.querySelector('.col-lg-4.mt-3.p-0.mx-auto');
+  const table_html = `<table class="col-lg-11 mx-auto mt-3 table table-sm table-hover table-sm text-center shadow small">
+  <thead class="text-dark">
+    <tr>
+      <th>Username</th>
+      <th>id_winner</th>
+      <th>Team_winner</th>
+      <th>id_oponent</th>
+    </tr>
+  </thead>
+  <tbody class="text-center text-secondary bg-light">
+    ${data.map(user => `
+  <tr>
+  <td class="">${user.username}</td>
+  <td>${user.winner}</td>
+  <td>${user.team_winner}</td>
+  <td>${user.user_2}</td>
+  </tr>`).join(' ')}
+  </tbody>
+  </table>`;
+
+  div_container.insertAdjacentHTML('beforeend', table_html);
 }
 
 //mi coleccion: obtener coleccion del backend.
 const getCollection = async () => {
   const config = configHeaders();
-  return axios.get(`${url_API}/collection/getAll`, config).then(resp => resp.data)
+  return axios.get(`${url_API}/collection/getAll`, config)
+    .then(resp => resp.data)
 }
 
 //los pokemons almacenados en la collection o equipo se muestran guardados.
@@ -601,21 +641,20 @@ const removeFromCollection = (button) => {
 
 }
 
-//user: cerrar sesion(sign off).Al Eliminar token del localStorage la pagina es redirigida a la pagina principal.
+//user: cerrar sesion(sign off).
+//Al Eliminar token del localStorage la pagina es redirigida a la pagina principal.
 const signOff = () => localStorage.removeItem('token');
 
 //mostrar modal de encuentros. 
 const showModal = () => {
   const body = document.querySelector("#body");
   const modal = document.querySelector("#modal-of-encounters");
-  const modal_back = document.querySelector(".modal-backdrop");
 
   body.classList.add('modal-open');
   modal.classList.add('show');
   modal.style = 'display: block;';
   element = '<div class="modal-backdrop fade show"></div>';
   body.insertAdjacentHTML('beforeend', element);
-  //modal_back.remove();
 }
 
 const hideModal = () => {
@@ -661,7 +700,7 @@ const showUsers = (users) => {
           </tbody></table>`;
 }
 
-//funcion para activar boton seleccionado.
+//funcion para activar "boton seleccionado" del grupo de botones que lista pokemon por generaciones.
 const buttonActive = (element) => {
   const elementActive = document.querySelector("div.btn-group.btn-group-sm button[class='btn btn-light active']");
   elementActive.classList.remove('active');
@@ -797,6 +836,7 @@ const getResults = async (id_oponent, team_oponent) => {
   }
 }
 
+//mostrar resultado del encuentro finalizado
 const displayResultOfEncounter = (message) => {
   const div_results = document.querySelector('#results-content');
   const message_result = document.querySelector('#message-results');
@@ -816,26 +856,30 @@ const displayResultOfEncounter = (message) => {
   </button>
   </div>`;
 
+  //settimeout para simular calculo de los resultados .
   setTimeout(() => {
     message_result.setAttribute('hidden', '');
     div_results.insertAdjacentHTML('beforeend', result);
   }, 4000);
 }
 
-//encounters: buscar pokemons en el array y sumar los puntos 'hp' , si no existe ; buscarlo en la pokeapi.
+//encounters: buscar pokemons en el array y sumar los puntos 'hp' , 
+//si no existe ; buscarlo en la pokeapi.
 const checkPokemonData = async (array_team) => {
   const results = [];
 
   for (const i in array_team) {
-    const result = pokemon.find(element => element.id === parseInt(array_team[i]));//.stats.find(item => item.stat.name === 'hp').base_stat;
+    const result = pokemon.find(element => element.id === parseInt(array_team[i]));
+
     if (result === undefined) {
       const info_pokemon = await getPokemonData(parseInt(array_team[i]));
       const stats = info_pokemon.stats.find(item => item.stat.name === 'hp').base_stat;
       results.push(stats);
-    }
-    else {
+
+    } else {
       const stats = result.stats.find(item => item.stat.name === 'hp').base_stat;
       results.push(stats);
+
     }
   }
 

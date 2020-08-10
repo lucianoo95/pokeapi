@@ -52,6 +52,7 @@ router.get('/user/getSelection', verificaToken, (req, res) => {
     if (error) res.status(400).json(error);
 
     const response = [];
+    
     result.map(data => {
       const user = {
         id: data.id,
